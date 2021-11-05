@@ -2,7 +2,7 @@
 
 # The Fight class save info about teams and some data
 class Fight
-  attr_reader :friend_team, :enemy_team
+  attr_reader :friend_team, :enemy_team, :active_position
 
   def initialize(friend_team, enemy_team)
     @friend_team = friend_team

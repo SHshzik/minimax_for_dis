@@ -23,13 +23,23 @@ enemy_team = Team.new([enemy_unit_1, enemy_unit_2])
 
 fight = Fight.new(friend_team, enemy_team)
 
+def get_next_step(fight)
+  puts fight
+  "2 3 1"
+end
+
 def make_move(fight, action)
+  puts fight
+  puts action
 end
 
 until fight.end?
   print 'Active position: '
-  position = gets.chomp.split(' ')
+  position = gets.chomp.split(' ').map(&:to_i)
   fight.set_active_position(position)
+
+  move = get_next_step(fight) if fight.active_position[0] == 1
+  puts move
 
   print 'Next move: '
   action = gets.chomp
