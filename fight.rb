@@ -13,4 +13,8 @@ class Fight
     @friend_team = original_fight.friend_team.dup
     @enemy_team = original_fight.enemy_team.dup
   end
+
+  def set_active_position(position)
+    @active_position = position
+  end
 end
