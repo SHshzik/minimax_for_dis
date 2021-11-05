@@ -9,6 +9,10 @@ class Fight
     @enemy_team = enemy_team
   end
 
+  def to_s
+    "#{friend_team.full_hp} / #{enemy_team.full_hp}"
+  end
+
   def initialize_copy(original_fight)
     @friend_team = original_fight.friend_team.dup
     @enemy_team = original_fight.enemy_team.dup

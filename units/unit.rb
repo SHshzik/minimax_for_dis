@@ -2,13 +2,14 @@
 
 # The Unit class represent base class unit's
 class Unit
+  attr_reader :current_hp
   def initialize(position, current_dmg = 0)
     @position = position
     @current_hp = full_hp - current_dmg
   end
 
   def to_s
-    "#{self.class} - #{@current_hp}"
+    "#{self.class} - #{current_hp}"
   end
 
   def heal?

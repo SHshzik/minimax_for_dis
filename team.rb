@@ -11,4 +11,8 @@ class Team
   def initialize_copy(original_team)
     @units = original_team.units.map(&:clone)
   end
+
+  def full_hp
+    units.map(&:current_hp).reduce(:+)
+  end
 end
