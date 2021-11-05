@@ -11,4 +11,8 @@ class Goblin < Unit
   def dmg
     15
   end
+
+  def initiative
+    30
+  end
 end

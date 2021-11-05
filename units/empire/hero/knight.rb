@@ -11,4 +11,8 @@ class Knight < Unit
   def dmg
     50
   end
+
+  def initiative
+    50
+  end
 end

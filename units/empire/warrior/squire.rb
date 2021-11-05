@@ -12,7 +12,7 @@ class Squire < Unit
     25
   end
 
-  def attack_type
-    1
+  def initiative
+    50
   end
 end

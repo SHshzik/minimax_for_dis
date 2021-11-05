@@ -9,10 +9,14 @@ class Acolyte < Unit
   end
 
   def dmg
-    20
+    -20
   end
 
-  def heal?
-    true
+  def initiative
+    10
+  end
+
+  def attack_type
+    2
   end
 end

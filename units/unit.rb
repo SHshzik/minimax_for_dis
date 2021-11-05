@@ -3,6 +3,11 @@
 # The Unit class represent base class unit's
 class Unit
   attr_reader :current_hp
+  # attack_type:
+  #   1 - one
+  #   2 - one form all
+  #   3 - all
+
   def initialize(position, current_dmg = 0)
     @position = position
     @current_hp = full_hp - current_dmg
@@ -20,8 +25,16 @@ class Unit
     0
   end
 
+  def attack_type
+    1
+  end
+
+  def initiative
+    0
+  end
+
   def heal?
-    false
+    dmg > 0
   end
 
   def defences
