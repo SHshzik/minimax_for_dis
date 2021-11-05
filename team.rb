@@ -15,4 +15,8 @@ class Team
   def full_hp
     units.map(&:current_hp).reduce(:+)
   end
+
+  def get_unit(position)
+    @units.find { |unit| unit.position == position }
+  end
 end

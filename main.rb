@@ -28,11 +28,6 @@ def get_next_step(fight)
   "2 3 1"
 end
 
-def make_move(fight, action)
-  puts fight
-  puts action
-end
-
 until fight.end?
   print 'Active position: '
   position = gets.chomp.split(' ').map(&:to_i)
@@ -44,7 +39,13 @@ until fight.end?
   print 'Next move: '
   action = gets.chomp
 
-  make_move(fight, action)
+  fight.make_move(action)
+
+  if action.length == 5
+    print 'miss?: '
+    miss = gets.chomp == '1'
+    fight.undo_attack(action) if miss
+  end
 
   fight.clear_active_position
 
