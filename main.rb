@@ -23,4 +23,21 @@ enemy_team = Team.new([enemy_unit_1, enemy_unit_2])
 
 fight = Fight.new(friend_team, enemy_team)
 
-puts fight
+def make_move(fight, action)
+end
+
+until fight.end?
+  print 'Active position: '
+  position = gets.chomp.split(' ')
+  fight.set_active_position(position)
+
+  print 'Next move: '
+  action = gets.chomp
+
+  make_move(fight, action)
+
+  fight.clear_active_position
+
+  puts "friend_team hp: #{friend_team.full_hp}"
+  puts "enemy_team hp: #{enemy_team.full_hp}"
+end

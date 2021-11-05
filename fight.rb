@@ -21,4 +21,12 @@ class Fight
   def set_active_position(position)
     @active_position = position
   end
+
+  def clear_active_position
+    @active_position = nil
+  end
+
+  def end?
+    @friend_team.full_hp.zero? || @enemy_team.full_hp.zero?
+  end
 end
