@@ -1,0 +1,4 @@
+detectors:
+  TooManyInstanceVariables:
+    exclude:
+      - "Unit"
