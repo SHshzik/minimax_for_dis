@@ -10,4 +10,8 @@ class Unit
   def to_s
     "#{self.class} - #{@current_hp}"
   end
+
+  def heal?
+    false
+  end
 end
