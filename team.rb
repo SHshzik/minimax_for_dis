@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "./services/get_attack_position"
+
 # The Team present team with 6 positions heroes
 class Team
   attr_reader :units
@@ -25,17 +27,13 @@ class Team
   end
 
   def get_can_attack_position(enemy_unit, enemy_team)
-    start = enemy_unit.position[0] - 1
-    end1 = enemy_unit.position[0] + 1
-    units.filter do |unit|
-      (start..end1).to_a.include?(unit.position[0])
-    end.map(&:position)
+    GetAttackPosition.call(enemy_unit.position).call(enemy_team, self)
   end
 
   def have_first_line?
     units
       .filter { |unit| unit.position[1] == 1 && unit.current_hp.positive? }
-      .positive?
+      .count > 0
   end
 
 end
