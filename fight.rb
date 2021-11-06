@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require './minimax'
+require "./minimax"
 
 # The Fight class save info about teams and some data
 class Fight
@@ -33,18 +33,18 @@ class Fight
   end
 
   def make_move(action)
-    if action == 'd'
+    if action == "d"
       defences
     else
-      attack(action.split(' ').map(&:to_i))
+      attack(action.split(" ").map(&:to_i))
     end
   end
 
   def undo_move(action)
-    if action == 'd'
+    if action == "d"
       undo_defences
     else
-      undo_attack(action.split(' ').map(&:to_i))
+      undo_attack(action.split(" ").map(&:to_i))
     end
   end
 
@@ -108,11 +108,11 @@ class Fight
     def_team = get_team(def_team_number)
 
     [].tap do |actions|
-      actions << 'd'
+      actions << "d" if attack_team_number == 1
       if current_active.heal?
         heal_positions = attack_team
                           .get_need_heal_positions
-                          .map { |pos| [attack_team_number, *pos].join(' ') }
+                          .map { |pos| [attack_team_number, *pos].join(" ") }
         actions.append(*heal_positions)
       end
 
@@ -121,7 +121,7 @@ class Fight
         if current_active.can_attack(attack_team)
           attack_positions = def_team
                                .get_can_attack_position(current_active, attack_team)
-                               .map { |pos| [def_team_number, *pos].join(' ') }
+                               .map { |pos| [def_team_number, *pos].join(" ") }
         end
 
         actions.append(*attack_positions)

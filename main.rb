@@ -39,7 +39,7 @@ until fight.end?
   if action.length == 5
     print "miss?: "
     miss = gets.chomp == "1"
-    fight.undo_attack(action) if miss
+    fight.undo_attack(action.split(' ').map(&:to_i)) if miss
   end
 
   fight.clear_active_position

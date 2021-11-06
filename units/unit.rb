@@ -38,12 +38,12 @@ class Unit
   end
 
   def defences
-    @defence = true
+    @defence += 50
     @has_move = false
   end
 
   def undo_defences
-    @defence = false
+    @defence -= 50
     @has_move = true
   end
 
@@ -58,17 +58,18 @@ class Unit
   end
 
   def get_dmg(dmg)
-    @current_hp -= dmg
+    @current_hp -= (dmg * (@defence / 100.0))
     @current_hp = 0 if current_hp.negative?
+    @current_hp = full_hp if @current_hp > full_hp
   end
 
   def undo_dmg(dmg)
-    @current_hp += dmg
+    @current_hp += (dmg * (@defence / 100.0))
     @current_hp = full_hp if @current_hp > full_hp
   end
 
   def defence
-    @defence ||= false
+    @defence ||= 0
   end
 
   def can_attack(team)
