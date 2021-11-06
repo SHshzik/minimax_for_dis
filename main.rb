@@ -8,8 +8,8 @@ require './fight'
 require './team'
 
 friend_unit_1 = Squire.new([1, 1])
-friend_unit_2 = Knight.new([1, 2])
-friend_unit_3 = Squire.new([1, 3])
+friend_unit_2 = Knight.new([2, 1])
+friend_unit_3 = Squire.new([3, 1])
 friend_unit_4 = Acolyte.new([2, 2])
 
 enemy_unit_1 = Goblin.new([1, 1])
@@ -23,17 +23,12 @@ enemy_team = Team.new([enemy_unit_1, enemy_unit_2])
 
 fight = Fight.new(friend_team, enemy_team)
 
-def get_next_step(fight)
-  puts fight
-  "2 3 1"
-end
-
 until fight.end?
   print 'Active position: '
   position = gets.chomp.split(' ').map(&:to_i)
   fight.set_active_position(position)
 
-  move = get_next_step(fight) if fight.active_position[0] == 1
+  move = fight.get_next_step if fight.active_position[0] == 1
   puts move
 
   print 'Next move: '

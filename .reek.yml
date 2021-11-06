@@ -2,3 +2,6 @@ detectors:
   TooManyInstanceVariables:
     exclude:
       - "Unit"
+  FeatureEnvy:
+    exclude:
+      - "Fight#get_next_step"

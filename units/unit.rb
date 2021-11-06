@@ -2,10 +2,10 @@
 
 # The Unit class represent base class unit's
 class Unit
-  attr_reader :current_hp
+  attr_reader :current_hp, :position
   # attack_type:
   #   1 - one
-  #   2 - one form all
+  #   2 - one from all
   #   3 - all
 
   def initialize(position, current_dmg = 0)
@@ -34,7 +34,7 @@ class Unit
   end
 
   def heal?
-    dmg > 0
+    dmg.negative?
   end
 
   def defences
@@ -71,4 +71,7 @@ class Unit
     @defence ||= false
   end
 
+  def can_attack(team)
+    position[1] == 1 || !team.have_first_line?
+  end
 end
