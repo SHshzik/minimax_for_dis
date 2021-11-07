@@ -60,13 +60,23 @@ class Unit
   end
 
   def get_dmg(dmg)
-    @current_hp -= (dmg * (1 - @defence / 100.0))
+    correct_dmg = if dmg.negative?
+                    dmg
+                  else
+                    (dmg * (1 - @defence / 100.0))
+                  end
+    @current_hp -= correct_dmg
     @current_hp = 0 if current_hp.negative?
     @current_hp = full_hp if @current_hp > full_hp
   end
 
   def undo_dmg(dmg)
-    @current_hp += (dmg * (1 - @defence / 100.0))
+    correct_dmg = if dmg.negative?
+                    dmg
+                  else
+                    (dmg * (1 - @defence / 100.0))
+                  end
+    @current_hp += correct_dmg
     @current_hp = full_hp if @current_hp > full_hp
   end
 
@@ -76,5 +86,6 @@ class Unit
 
   def reload_round
     @has_move = true
+    @has_move = false if current_hp.zero?
   end
 end

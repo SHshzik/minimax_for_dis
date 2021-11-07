@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "pp"
+require "tree"
+
 # The Fight class save info about teams and some data
 class Fight
   attr_reader :friend_team, :enemy_team, :active_position
@@ -76,30 +79,57 @@ class Fight
     [friend_team, enemy_team][number - 1]
   end
 
-  def minimax(fight, depth, max, _prev_action)
-    p depth
-    return fight.score / depth.to_f if fight.end?
+  def minimax(fight, depth, max, prev_action, action_node)
+    if fight.end?
+      action_node << Tree::TreeNode.new("#{fight.score / depth.to_f}")
 
-    return fight.score / depth.to_f if depth > 55
+      return [fight.score / depth.to_f, prev_action]
+    end
+
+    if depth > 10
+      action_node << Tree::TreeNode.new("#{fight.score / depth.to_f}")
+
+      return [fight.score / depth.to_f, prev_action]
+    end
 
     fight_clone = fight.dup
-
     if max
       best_score = -Float::INFINITY
+      best_prev_action = nil
 
       fight_clone.actions.each do |action|
         fight_clone.make_move(action)
+
+        inner_action_node = Tree::TreeNode.new("#{action}")
+        action_node << inner_action_node
+
+        action_string = [
+          "Кто бил - #{fight_clone.current_active.class}",
+          "Действие - #{action}",
+          "ХП Команды - #{fight_clone.friend_team.full_hp}",
+          "ХП Врага - #{fight_clone.enemy_team.full_hp}"
+        ].join("\n")
+
         fight_clone.update_round
+
         old_active_position = fight_clone.active_position.dup
 
-        next_active_position = fight_clone.next_active_position
-
+        next_active_position = fight_clone.next_active_position.dup
 
         fight_clone.set_active_position(next_active_position)
 
-        score = fight_clone.minimax(fight_clone, depth + 1, next_active_position[0] == 1, action)
+        score, full_prev_action = fight_clone.minimax(
+          fight_clone,
+          depth + 1,
+          next_active_position[0] == 1,
+          prev_action + [action_string],
+          inner_action_node
+        )
 
-        best_score = score if score > best_score
+        if score > best_score
+          best_score = score
+          best_prev_action = full_prev_action.dup
+        end
 
         fight_clone.set_active_position(old_active_position)
         fight_clone.undo_move(action)
@@ -107,57 +137,102 @@ class Fight
 
     else
       best_score = Float::INFINITY
-
+      best_prev_action = nil
       fight_clone.actions.each do |action|
         fight_clone.make_move(action)
+
+        inner_action_node = Tree::TreeNode.new("#{action}")
+        action_node << inner_action_node
+
+        action_string = [
+          "Кто бил - #{fight_clone.current_active.class}",
+          "Действие - #{action}",
+          "ХП Команды - #{fight_clone.friend_team.full_hp}",
+          "ХП Врага - #{fight_clone.enemy_team.full_hp}"
+        ].join("\n")
+
         fight_clone.update_round
         old_active_position = fight_clone.active_position.dup
         next_active_position = fight_clone.next_active_position.dup
 
         fight_clone.set_active_position(next_active_position)
 
-        score = fight_clone.minimax(fight_clone, depth + 1, next_active_position[0] == 1, action)
+        score, full_prev_action = fight_clone.minimax(
+          fight_clone,
+          depth + 1,
+          next_active_position[0] == 1,
+          prev_action + [action_string],
+          inner_action_node
+        )
 
-        best_score = score if score < best_score
+        if score < best_score
+          best_score = score
+          best_prev_action = full_prev_action.dup
+        end
+
         fight_clone.set_active_position(old_active_position)
         fight_clone.undo_move(action)
       end
 
     end
 
-    best_score
+    [best_score, best_prev_action]
   end
 
   def get_next_step
     move = nil
     best_score = -Float::INFINITY
     fight_clone = dup
+    best_prev_action = nil
+
+    root_node = Tree::TreeNode.new("#{current_active.class} - #{current_active.position}")
 
     fight_clone.actions.each do |action|
       fight_clone.make_move(action)
+
+      action_node = Tree::TreeNode.new("#{action}")
+      root_node << action_node
+
+      action_string = [
+        "Кто бил - #{fight_clone.current_active.class}",
+        "Действие - #{action}",
+        "ХП Команды - #{fight_clone.friend_team.full_hp}",
+        "ХП Врага - #{fight_clone.enemy_team.full_hp}"
+      ].join("\n")
+
       fight_clone.update_round
       old_active_position = fight_clone.active_position.dup
       next_active_position = fight_clone.next_active_position.dup
 
       fight_clone.set_active_position(next_active_position)
 
-      score = fight_clone.minimax(fight_clone, 1, next_active_position[0] == 1, action)
+      score, full_prev_action = fight_clone.minimax(
+        fight_clone,
+        1,
+        next_active_position[0] == 1,
+        [action_string],
+        action_node
+      )
 
       if score > best_score
         best_score = score
         move = action
+        best_prev_action = full_prev_action.dup
       end
 
       fight_clone.set_active_position(old_active_position)
       fight_clone.undo_move(action)
     end
 
+    pp best_prev_action
+    p best_score
+    root_node.print_tree
     move
   end
 
   def end_round?
-    friend_team.units.filter { |unit| unit.has_move }.count.zero? &&
-      enemy_team.units.filter { |unit| unit.has_move }.count.zero?
+    friend_team.units.filter { |unit| unit.has_move && unit.current_hp.positive? }.count.zero? &&
+      enemy_team.units.filter { |unit| unit.has_move && unit.current_hp.positive? }.count.zero?
   end
 
   def update_round
@@ -170,12 +245,12 @@ class Fight
   def next_active_position
     first = friend_team
               .units
-              .filter { |unit| unit.has_move }
+              .filter { |unit| unit.has_move && unit.current_hp.positive? }
               .map { |unit| [[1, *unit.position], unit.initiative] }
 
     second = enemy_team
                .units
-               .filter { |unit| unit.has_move }
+               .filter { |unit| unit.has_move && unit.current_hp.positive? }
                .map { |unit| [[2, *unit.position], unit.initiative] }
 
     (first + second).sort_by { |unit| unit[1] }.reverse.first[0]
@@ -192,12 +267,17 @@ class Fight
     def_team = get_team(def_team_number)
 
     [].tap do |actions|
-      actions << "d" if attack_team_number == 1
+      actions << "d" if attack_team_number == 1 && !current_active.heal?
+      actions << "d" if attack_team_number == 2 &&
+                        current_active.position[1] == 2 &&
+                        current_active.attack_type == 1 &&
+                        attack_team.have_first_line?
       if current_active.heal?
         heal_positions = attack_team
                            .get_need_heal_positions
                            .map { |pos| [attack_team_number, *pos].join(" ") }
         actions.append(*heal_positions)
+        actions << "d" if heal_positions.empty?
       end
 
       if current_active.attack_type == 1
