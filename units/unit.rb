@@ -11,6 +11,8 @@ class Unit
   def initialize(position, current_dmg = 0)
     @position = position
     @current_hp = full_hp - current_dmg
+    @defence = 0
+    @has_move = true
   end
 
   def to_s
@@ -58,21 +60,21 @@ class Unit
   end
 
   def get_dmg(dmg)
-    @current_hp -= (dmg * (@defence / 100.0))
+    @current_hp -= (dmg * (1 - @defence / 100.0))
     @current_hp = 0 if current_hp.negative?
     @current_hp = full_hp if @current_hp > full_hp
   end
 
   def undo_dmg(dmg)
-    @current_hp += (dmg * (@defence / 100.0))
+    @current_hp += (dmg * (1 - @defence / 100.0))
     @current_hp = full_hp if @current_hp > full_hp
-  end
-
-  def defence
-    @defence ||= 0
   end
 
   def can_attack(team)
     position[1] == 1 || !team.have_first_line?
+  end
+
+  def reload_round
+    @has_move = true
   end
 end

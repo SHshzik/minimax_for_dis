@@ -29,7 +29,7 @@ until fight.end?
   fight.set_active_position(position)
 
   move = fight.get_next_step if fight.active_position[0] == 1
-  puts move
+  puts move if fight.active_position[0] == 1
 
   print "Next move: "
   action = gets.chomp
