@@ -35,6 +35,10 @@ class Unit
     0
   end
 
+  def weight
+    1
+  end
+
   def heal?
     dmg.negative?
   end
@@ -87,5 +91,9 @@ class Unit
   def reload_round
     @has_move = true
     @has_move = false if current_hp.zero?
+  end
+
+  def score
+    current_hp * weight
   end
 end

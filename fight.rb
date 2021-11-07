@@ -226,7 +226,7 @@ class Fight
 
     pp best_prev_action
     p best_score
-    root_node.print_tree
+    # root_node.print_tree
     move
   end
 
@@ -257,7 +257,7 @@ class Fight
   end
 
   def score
-    friend_team.full_hp - enemy_team.full_hp
+    friend_team.score - enemy_team.score
   end
 
   def actions
@@ -287,6 +287,16 @@ class Fight
                                .get_can_attack_position(current_active, attack_team)
                                .map { |pos| [def_team_number, *pos].join(" ") }
         end
+
+        actions.append(*attack_positions)
+      end
+
+      if current_active.attack_type == 2
+        attack_positions = def_team
+                             .units
+                             .filter { |unit| unit.current_hp.positive? }
+                             .map(&:position)
+                             .map { |pos| [def_team_number, *pos].join(" ") }
 
         actions.append(*attack_positions)
       end

@@ -4,6 +4,7 @@ require "./units/empire/warrior/squire"
 require "./units/empire/hero/knight"
 require "./units/empire/support/acolyte"
 require "./units/greenskin/goblin"
+require "./units/greenskin/goblin_archer"
 require "./units/net_human/thug"
 require "./units/net_human/peasant"
 require "./fight"
@@ -20,8 +21,9 @@ friend_team = Team.new(
 
 enemy_team = Team.new(
   [
-    Goblin.new([1, 1]),
-    Goblin.new([3, 1])
+    Thug.new([1, 1]),
+    Thug.new([3, 1]),
+    Thug.new([2, 2])
   ]
 )
 

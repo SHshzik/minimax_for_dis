@@ -18,6 +18,10 @@ class Team
     units.map(&:current_hp).reduce(:+)
   end
 
+  def score
+    units.map(&:score).reduce(:+)
+  end
+
   def get_unit(position)
     @units.find { |unit| unit.position == position }
   end
