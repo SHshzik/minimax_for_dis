@@ -2,7 +2,7 @@
 
 # The Unit class represent base class unit's
 class Unit
-  attr_reader :current_hp, :position
+  attr_reader :current_hp, :position, :has_move
   # attack_type:
   #   1 - one
   #   2 - one from all

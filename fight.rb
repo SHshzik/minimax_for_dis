@@ -77,9 +77,10 @@ class Fight
   end
 
   def minimax(fight, depth, max, _prev_action)
-    return fight.score if fight.end?
+    p depth
+    return fight.score / depth.to_f if fight.end?
 
-    return fight.score if depth > 15
+    return fight.score / depth.to_f if depth > 55
 
     fight_clone = fight.dup
 
@@ -91,13 +92,15 @@ class Fight
         fight_clone.update_round
         old_active_position = fight_clone.active_position.dup
 
-        fight_clone.next_active_position_list.each do |next_active_position| # убрать цикл
-          fight_clone.set_active_position(next_active_position)
+        next_active_position = fight_clone.next_active_position
 
-          score = fight_clone.minimax(fight_clone, depth + 1, next_active_position[0] == 1, action)
 
-          best_score = score if score > best_score
-        end
+        fight_clone.set_active_position(next_active_position)
+
+        score = fight_clone.minimax(fight_clone, depth + 1, next_active_position[0] == 1, action)
+
+        best_score = score if score > best_score
+
         fight_clone.set_active_position(old_active_position)
         fight_clone.undo_move(action)
       end
@@ -109,13 +112,13 @@ class Fight
         fight_clone.make_move(action)
         fight_clone.update_round
         old_active_position = fight_clone.active_position.dup
-        fight_clone.next_active_position_list.each do |next_active_position|
-          fight_clone.set_active_position(next_active_position)
+        next_active_position = fight_clone.next_active_position.dup
 
-          score = fight_clone.minimax(fight_clone, depth + 1, next_active_position[0] == 1, action)
+        fight_clone.set_active_position(next_active_position)
 
-          best_score = score if score < best_score
-        end
+        score = fight_clone.minimax(fight_clone, depth + 1, next_active_position[0] == 1, action)
+
+        best_score = score if score < best_score
         fight_clone.set_active_position(old_active_position)
         fight_clone.undo_move(action)
       end
@@ -134,16 +137,17 @@ class Fight
       fight_clone.make_move(action)
       fight_clone.update_round
       old_active_position = fight_clone.active_position.dup
-      fight_clone.next_active_position_list.each do |next_active_position|
-        fight_clone.set_active_position(next_active_position)
+      next_active_position = fight_clone.next_active_position.dup
 
-        score = fight_clone.minimax(fight_clone, 1, next_active_position[0] == 1, action)
+      fight_clone.set_active_position(next_active_position)
 
-        if score > best_score
-          best_score = score
-          move = action
-        end
+      score = fight_clone.minimax(fight_clone, 1, next_active_position[0] == 1, action)
+
+      if score > best_score
+        best_score = score
+        move = action
       end
+
       fight_clone.set_active_position(old_active_position)
       fight_clone.undo_move(action)
     end
@@ -163,7 +167,7 @@ class Fight
     enemy_team.units.each(&:reload_round)
   end
 
-  def next_active_position_list
+  def next_active_position
     first = friend_team
               .units
               .filter { |unit| unit.has_move }
@@ -174,11 +178,7 @@ class Fight
                .filter { |unit| unit.has_move }
                .map { |unit| [[2, *unit.position], unit.initiative] }
 
-    sorted_value = (first + second).sort_by { |unit| unit[1] }.reverse
-
-    sorted_value
-      .filter { |pos| pos[1] == sorted_value.first[1] }
-      .map { |val| val[0] }
+    (first + second).sort_by { |unit| unit[1] }.reverse.first[0]
   end
 
   def score
@@ -192,7 +192,7 @@ class Fight
     def_team = get_team(def_team_number)
 
     [].tap do |actions|
-      actions << "d" if attack_team_number == 1 # && current_active.heal?
+      actions << "d" if attack_team_number == 1
       if current_active.heal?
         heal_positions = attack_team
                            .get_need_heal_positions
